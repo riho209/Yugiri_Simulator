@@ -3,17 +3,17 @@
 #include "Keyboard.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    ChangeWindowMode(TRUE), DxLib_Init(), SetDrawScreen(DX_SCREEN_BACK); //ƒEƒBƒ“ƒhƒEƒ‚[ƒh•ÏX‚Æ‰Šú‰»‚Æ— ‰æ–Êİ’è
+    ChangeWindowMode(TRUE), DxLib_Init(), SetDrawScreen(DX_SCREEN_BACK); //ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½[ï¿½hï¿½ÏXï¿½Æï¿½ï¿½ï¿½Æ—ï¿½ï¿½ï¿½Êİ’ï¿½
 
-    while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {//‰æ–ÊXV & ƒƒbƒZ[ƒWˆ— & ‰æ–ÊÁ‹
+    while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {//ï¿½ï¿½ÊXï¿½V & ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ & ï¿½ï¿½Êï¿½ï¿½
 
-        Keyboard_Update();    //ƒL[ƒ{[ƒh‚ÌXV
+        Keyboard_Update();    //ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ÌXï¿½V
 
-        SceneMgr_Update();  //XV
-        SceneMgr_Draw();    //•`‰æ
+        SceneMgr_Update();  //ï¿½Xï¿½V
+        SceneMgr_Draw();    //ï¿½`ï¿½ï¿½
 
     }
 
-    DxLib_End(); // DXƒ‰ƒCƒuƒ‰ƒŠI—¹ˆ—
+    DxLib_End(); // DXï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     return 0;
 }
