@@ -2,6 +2,9 @@
 #include "Config.h"
 #include "Game.h"
 #include "Menu.h"
+#include "Score.h"
+#include "Ranking.h"
+#include "End.h"
 #include "SceneMgr.h"
 
 static eScene Scene = eScene_Menu;    //ƒV[ƒ“ŠÇ—•Ï”
