@@ -18,6 +18,15 @@ void SceneMgr_Update() {
     case eScene_Game:
         Game_Update();
         break;
+    case eScene_Score:
+        Score_Update();
+        break;
+    case eScene_Ranking:
+        Ranking_Update();
+        break;
+    case eScene_End:
+        End_Update();
+        break;
     case eScene_Config:
         Config_Update();
         break;
@@ -32,6 +41,15 @@ void SceneMgr_Draw() {
         break;//ˆÈ‰º—ª
     case eScene_Game:
         Game_Draw();
+        break;
+    case eScene_Score:
+        Score_Draw();
+        break;
+    case eScene_Ranking:
+        Ranking_Draw();
+        break;
+    case eScene_End:
+        End_Draw();
         break;
     case eScene_Config:
         Config_Draw();

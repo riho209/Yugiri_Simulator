@@ -2,18 +2,20 @@
 #include "SceneMgr.h"
 #include "DxLib.h"
 #include "Keyboard.h"
+#include "Func.h"
 
-
-const static int PLAY_Y = 240;    //「テボ」文字のy位置
+const static int PLAY_Y = 240;
 const static int TEBO_Y = 260;
 const static int HIRAZARU_Y = 280;
-const static int EXPLANATION_Y = 300;    //「設定」文字のy位置
+const static int EXPLANATION_Y = 300;
+const static int RANKING_Y = 320;
 
 
 typedef enum {
     eMenu_TEBO,
     eMenu_HIRAZARU,
     eMenu_EXPLANATION,    //操作説明
+    eMenu_RANKING,
     eMenu_Num,        //本項目の数
 } eMenu;
 
@@ -29,14 +31,19 @@ void Menu_Update() {
     }
     if (Keyboard_Get(KEY_INPUT_RETURN) == 1) {//エンターキーが押されたら
         switch (NowSelect) {//現在選択中の状態によって処理を分岐
-        case eMenu_TEBO://テボ選択中なら
-            SceneMgr_ChangeScene(eScene_Game);//シーンをゲーム画面に変更
-            break;
-        case eMenu_HIRAZARU: //平ざる選択中なら
+        case eMenu_TEBO:
+            UseEquipment_Update(tebo);
             SceneMgr_ChangeScene(eScene_Game);
-        case eMenu_EXPLANATION://操作説明選択中なら
-            SceneMgr_ChangeScene(eScene_Config);//シーンを設定画面に変更
             break;
+        case eMenu_HIRAZARU:
+            UseEquipment_Update(hirazaru);
+            SceneMgr_ChangeScene(eScene_Game);
+            break;
+        case eMenu_EXPLANATION:
+            SceneMgr_ChangeScene(eScene_Config);
+            break;
+        case eMenu_RANKING:
+            SceneMgr_ChangeScene(eScene_Ranking);
         }
     }
 }
@@ -49,7 +56,8 @@ void Menu_Draw() {
     DrawString(280, TEBO_Y, "てぼ", GetColor(255, 255, 255));
     DrawString(280, HIRAZARU_Y, "平ザル", GetColor(255, 255, 255));
     DrawString(280, EXPLANATION_Y, "操作説明", GetColor(255, 255, 255));
-    
+    DrawString(280, RANKING_Y, "ランキング", GetColor(255, 255, 255));
+    DrawFormatString(0, 400, GetColor(255, 255, 255), "%d", NowSelect);
     int y = 0;
     switch (NowSelect) {//現在の選択状態に従って処理を分岐
     case eMenu_TEBO:
@@ -58,8 +66,11 @@ void Menu_Draw() {
     case eMenu_HIRAZARU:
         y = HIRAZARU_Y;
         break;
-    case eMenu_EXPLANATION://設定選択中なら
-        y = EXPLANATION_Y;    //設定の座標を格納
+    case eMenu_EXPLANATION:
+        y = EXPLANATION_Y;
+        break;
+    case eMenu_RANKING:
+        y = RANKING_Y;
         break;
     }
     DrawString(250, y, "■", GetColor(255, 255, 255));

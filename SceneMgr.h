@@ -10,6 +10,7 @@ typedef enum {
     eScene_End,//I—¹‰æ–Ê
 } eScene ;
 
+
 //XV
 void SceneMgr_Update();
 

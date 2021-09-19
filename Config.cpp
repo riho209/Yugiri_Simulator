@@ -6,7 +6,8 @@ static int mImageHandle;    //画像ハンドル格納用変数
 
 //初期化
 void Config_Initialize() {
-    mImageHandle = LoadGraph("images/Scene_Config.png");//画像のロード
+    mImageHandle = LoadGraph("images/1.png");//画像のロード
+    LoadGraphScreen(50, 100, "images/1.png", TRUE); // 画像を描画する
 }
 
 //終了処理
@@ -15,6 +16,7 @@ void Config_Finalize() {
 }
 //更新
 void Config_Update() {
+
     if (CheckHitKey(KEY_INPUT_ESCAPE) != 0) {//Escキーが押されていたら
         SceneMgr_ChangeScene(eScene_Menu);//シーンをメニューに変更
     }
