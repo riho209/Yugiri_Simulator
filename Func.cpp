@@ -4,24 +4,23 @@
 #include <chrono>
 #include <thread>
 
-using std::this_thread::sleep_for;
+//using std::this_thread::sleep_for;
 
 static int sceneChangeFlag = 0; //0:画面遷移を禁止 1:画面遷移を許可
 
-static SaveData currentPlayData = {
-    GetNowCount(),
-    0,
-    0,
-    init
-};
+static SaveData currentPlayData;
+
+static int imageHandle = LoadGraph("images/1.png");
 
 static SaveData allPlayData[100] = {};
 
 static int playDataNumber = 0; //allPlayDataの要素数を管理する変数
 
+/*
 void sleep(int ms) {
 	sleep_for(std::chrono::milliseconds(ms));
 }
+*/
 
 void timer(int second) {
     int timediff = 1;
@@ -35,22 +34,21 @@ void timer(int second) {
 }
 
 
+
+
 int Time_Get() {
     return(currentPlayData.time);
 }
 
-void Time_Draw() {
-    DrawFormatString(0, 60, GetColor(255, 255, 255), "経過時間(ミリ秒): %d", currentPlayData.time);
+void Time_Draw(int x, int y, int cr) {
+    DrawFormatString(x, y, cr, "経過時間(ミリ秒): %d", currentPlayData.time);
+    DrawFormatString(x, y+100, cr, "経過時間(h:m:s): %02d:%02d:%02d", (currentPlayData.time / 1000) /3600, ((currentPlayData.time / 1000) % 3600) / 60, (currentPlayData.time/1000) % 60);
 }
 
 void Time_Update() {
     currentPlayData.time = GetNowCount() - currentPlayData.startTime;
 }
 
-void Time_Finalize() {
-    currentPlayData.time = 0;
-    currentPlayData.startTime = GetNowCount();
-}
 
 
 void ScoreV_Update() {
@@ -61,6 +59,9 @@ void ScoreV_Update() {
     case hirazaru:
         currentPlayData.score = 10000 - currentPlayData.time + 100;
         break;
+    }
+    if (currentPlayData.score < 1) {
+        currentPlayData.score = 1;
     }
 }
 
@@ -73,6 +74,8 @@ void ScoreV_Finalize() {
 }
 
 
+
+
 int UseEquipment_Get() {
     return(currentPlayData.equipment);
 }
@@ -80,6 +83,19 @@ int UseEquipment_Get() {
 void UseEquipment_Update(eKind kind) {
     currentPlayData.equipment = kind;
 }
+
+void UseEquipment_Draw(int x, int y, int cr) {
+    switch (currentPlayData.equipment) {
+    case tebo:
+        DrawString(x, y, "てぼモード", cr);
+        break;
+    case hirazaru:
+        DrawString(x, y, "ひらざるモード", cr);
+        break;
+    }
+}
+
+
 
 int SceneChangeFlag_Get() {
     return(sceneChangeFlag);
@@ -93,15 +109,34 @@ void SceneChangeFlag_Forbid() {
     sceneChangeFlag = 0;
 }
 
+
+
+
 SaveData CurrentPlayData_Get() {
     return(currentPlayData);
 }
+
+void CurrentPlayData_Initialize() {
+    currentPlayData = {
+        GetNowCount(),
+        0,
+        0,
+        init
+    };
+}
+
+
 
 
 void AllPlayData_Update() {
     allPlayData[playDataNumber] = currentPlayData;
     playDataNumber = playDataNumber + 1;
 }
+
+
+
+
+
 int compar(const void* a, const void* b) {
     if (((SaveData*)a)->score < ((SaveData*)b)->score) {
         return 1;
@@ -112,15 +147,38 @@ int compar(const void* a, const void* b) {
 }
 
 void AllPlayData_Draw(int x, int y) {
+    static int cr;
+
     qsort(allPlayData, 10, sizeof(SaveData), compar);
+    DrawString(x, y-20, "順位　時間　スコア　器具", GetColor(255, 255, 255));
     for (int i = 0; i < 10; i++) {
+        if (currentPlayData.time == allPlayData[i].time) { //ここの比較方法あまり良くないかも
+            cr = GetColor(255, 255, 0);
+        }
+        else {
+            cr = GetColor(255, 255, 255);
+        }
         switch (allPlayData[i].equipment) {
         case tebo:
-            DrawFormatString(x, y + i * 20, GetColor(255, 255, 255), "%d %d てぼ", allPlayData[i].time, allPlayData[i].score);
+            DrawFormatString(x, y + i * 20, cr, "%d位 %d %d てぼ", i + 1, allPlayData[i].time, allPlayData[i].score);
             break;
         case hirazaru:
-            DrawFormatString(x, y + i * 20, GetColor(255, 255, 255), "%d %d ひらざる", allPlayData[i].time, allPlayData[i].score);
-            break;
+            DrawFormatString(x, y + i * 20, cr, "%d位 %d %d ひらざる", i + 1, allPlayData[i].time, allPlayData[i].score);
+            break;   
         }
     }
+}
+
+
+
+
+void Enter_Sound() {
+    static int Handle = LoadSoundMem("sounds/決定、ボタン押下1.mp3");
+    PlaySoundMem(Handle, DX_PLAYTYPE_BACK);
+}
+
+void File_Output() {
+    FILE* fp = fopen("savedata.dat", "wb");//バイナリファイルを開く
+    fwrite(&currentPlayData, sizeof(SaveData), sizeof(currentPlayData) / sizeof(currentPlayData), fp); // SaveData_t構造体の中身を出力
+    fclose(fp);
 }

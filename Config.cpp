@@ -1,6 +1,7 @@
 #include "Config.h"
 #include "SceneMgr.h"
 #include "DxLib.h"
+#include "Func.h"
 
 static int mImageHandle;    //画像ハンドル格納用変数
 
@@ -18,6 +19,7 @@ void Config_Finalize() {
 void Config_Update() {
 
     if (CheckHitKey(KEY_INPUT_ESCAPE) != 0) {//Escキーが押されていたら
+        Enter_Sound();
         SceneMgr_ChangeScene(eScene_Menu);//シーンをメニューに変更
     }
 }
