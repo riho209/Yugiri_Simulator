@@ -3,18 +3,19 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-
+#include<fstream>
+#include<string>
+#include<vector>
+#include <algorithm>
+#define RANKINGRANGE 10
+using namespace std;
 //using std::this_thread::sleep_for;
 
-static int sceneChangeFlag = 0; //0:‰æ–Ê‘JˆÚ‚ğ‹Ö~ 1:‰æ–Ê‘JˆÚ‚ğ‹–‰Â
+static int sceneChangeFlag = 0; //0:ç”»é¢é·ç§»ã‚’ç¦æ­¢ 1:ç”»é¢é·ç§»ã‚’è¨±å¯
 
 static SaveData currentPlayData;
 
 static int imageHandle = LoadGraph("images/1.png");
-
-static SaveData allPlayData[100] = {};
-
-static int playDataNumber = 0; //allPlayData‚Ì—v‘f”‚ğŠÇ—‚·‚é•Ï”
 
 /*
 void sleep(int ms) {
@@ -33,23 +34,18 @@ void timer(int second) {
     }
 }
 
-
-
-
 int Time_Get() {
     return(currentPlayData.time);
 }
 
 void Time_Draw(int x, int y, int cr) {
-    DrawFormatString(x, y, cr, "Œo‰ßŠÔ(ƒ~ƒŠ•b): %d", currentPlayData.time);
-    DrawFormatString(x, y+100, cr, "Œo‰ßŠÔ(h:m:s): %02d:%02d:%02d", (currentPlayData.time / 1000) /3600, ((currentPlayData.time / 1000) % 3600) / 60, (currentPlayData.time/1000) % 60);
+    DrawFormatString(x, y, cr, "çµŒéæ™‚é–“(ãƒŸãƒªç§’): %d", currentPlayData.time);
+    DrawFormatString(x, y+100, cr, "çµŒéæ™‚é–“(h:m:s): %02d:%02d:%02d", (currentPlayData.time / 1000) /3600, ((currentPlayData.time / 1000) % 3600) / 60, (currentPlayData.time/1000) % 60);
 }
 
 void Time_Update() {
     currentPlayData.time = GetNowCount() - currentPlayData.startTime;
 }
-
-
 
 void ScoreV_Update() {
     switch (currentPlayData.equipment) {
@@ -73,9 +69,6 @@ void ScoreV_Finalize() {
     currentPlayData.score = 0;
 }
 
-
-
-
 int UseEquipment_Get() {
     return(currentPlayData.equipment);
 }
@@ -87,15 +80,13 @@ void UseEquipment_Update(eKind kind) {
 void UseEquipment_Draw(int x, int y, int cr) {
     switch (currentPlayData.equipment) {
     case tebo:
-        DrawString(x, y, "‚Ä‚Úƒ‚[ƒh", cr);
+        DrawString(x, y, "ã¦ã¼ãƒ¢ãƒ¼ãƒ‰", cr);
         break;
     case hirazaru:
-        DrawString(x, y, "‚Ğ‚ç‚´‚éƒ‚[ƒh", cr);
+        DrawString(x, y, "ã²ã‚‰ã–ã‚‹ãƒ¢ãƒ¼ãƒ‰", cr);
         break;
     }
 }
-
-
 
 int SceneChangeFlag_Get() {
     return(sceneChangeFlag);
@@ -109,11 +100,63 @@ void SceneChangeFlag_Forbid() {
     sceneChangeFlag = 0;
 }
 
-
-
-
 SaveData CurrentPlayData_Get() {
     return(currentPlayData);
+}
+
+//csvã§æ›¸ãè¾¼ã¿ time,score,equipment
+int WritePlayData(const char* fileName) {
+    std::ofstream ofs(fileName, std::ios::app);
+    if (!ofs) {
+        std::cout << "ãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‹ã‘ã¾ã›ã‚“ã§ã—ãŸ" << endl;
+        return 0;
+    }
+    ofs << currentPlayData.time << "," << currentPlayData.score << "," << currentPlayData.equipment << endl;
+    cout << "æ›¸ãè¾¼ã¿å®Œäº†" << endl;
+
+    return 1;
+}
+
+vector<int> split(string str, char del) {
+    int first = 0;
+    int last = int(str.find_first_of(del));
+
+    vector<int> result;
+    int size = int(str.size());
+    while (first < size) {
+        string subStr(str, first, last - first);
+        int num = stoi(subStr.c_str());
+        result.push_back(num);
+        first = last + 1;
+        last = int(str.find_first_of(del, first));
+        if (last == string::npos) {
+            last = int(str.size());
+        }
+    }
+    return result;
+}
+vector <vector<int>> csv2vector(string filename, int ignore_line_num) {
+    //csvãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
+    ifstream reading_file;
+    reading_file.open(filename, ios::in);
+    if (!reading_file) {
+        vector<vector<int> > data;
+        return data;
+    }
+    std::string reading_line_buffer;
+    for (int line = 0; line < ignore_line_num; line++) {
+        getline(reading_file, reading_line_buffer);
+        if (reading_file.eof()) break;
+    }
+    //äºŒæ¬¡å…ƒã®vectorã‚’ä½œæˆ
+    vector<vector<int> > data;
+    while (getline(reading_file, reading_line_buffer)) {
+        if (reading_line_buffer.size() == 0) break;
+        vector<int> temp_data;
+        temp_data = split(reading_line_buffer, ',');
+        data.push_back(temp_data);
+    }
+    return data;
 }
 
 void CurrentPlayData_Initialize() {
@@ -125,60 +168,38 @@ void CurrentPlayData_Initialize() {
     };
 }
 
-
-
-
 void AllPlayData_Update() {
-    allPlayData[playDataNumber] = currentPlayData;
-    playDataNumber = playDataNumber + 1;
-}
-
-
-
-
-
-int compar(const void* a, const void* b) {
-    if (((SaveData*)a)->score < ((SaveData*)b)->score) {
-        return 1;
-    }
-    else {
-        return -1;
-    }
+    int f = WritePlayData("Save_Data/Score.csv");
+    if (f == 0) return; //æ›¸ãè¾¼ã¿å¤±æ•—
+    
 }
 
 void AllPlayData_Draw(int x, int y) {
     static int cr;
-
-    qsort(allPlayData, 10, sizeof(SaveData), compar);
-    DrawString(x, y-20, "‡ˆÊ@ŠÔ@ƒXƒRƒA@Ší‹ï", GetColor(255, 255, 255));
-    for (int i = 0; i < 10; i++) {
-        if (currentPlayData.time == allPlayData[i].time) { //‚±‚±‚Ì”äŠr•û–@‚ ‚Ü‚è—Ç‚­‚È‚¢‚©‚à
+    vector <vector<int>> allplay_data=csv2vector("Save_Data/Score.csv", 0);
+    sort(allplay_data.rbegin(), allplay_data.rend(),[](const vector<int>& alpha, const vector<int>& beta) {return alpha[1] < beta[1]; });
+    DrawString(x, y-20, "é †ä½ã€€æ™‚é–“ã€€ã‚¹ã‚³ã‚¢ã€€å™¨å…·", GetColor(255, 255, 255));
+    int range = RANKINGRANGE;
+    if (int(allplay_data.size()) < RANKINGRANGE) range = int(allplay_data.size());
+    for (int i = 0; i <range; i++) {
+        if (currentPlayData.time == allplay_data[i][0]) { //ã“ã“ã®æ¯”è¼ƒæ–¹æ³•ã‚ã¾ã‚Šè‰¯ããªã„ã‹ã‚‚
             cr = GetColor(255, 255, 0);
         }
         else {
             cr = GetColor(255, 255, 255);
         }
-        switch (allPlayData[i].equipment) {
+        switch (allplay_data[i][2]) {
         case tebo:
-            DrawFormatString(x, y + i * 20, cr, "%dˆÊ %d %d ‚Ä‚Ú", i + 1, allPlayData[i].time, allPlayData[i].score);
+            DrawFormatString(x, y + i * 20, cr, "%dä½ %d %d ã¦ã¼", i + 1, allplay_data[i][0], allplay_data[i][1]);
             break;
         case hirazaru:
-            DrawFormatString(x, y + i * 20, cr, "%dˆÊ %d %d ‚Ğ‚ç‚´‚é", i + 1, allPlayData[i].time, allPlayData[i].score);
+            DrawFormatString(x, y + i * 20, cr, "%dä½ %d %d ã²ã‚‰ã–ã‚‹", i + 1, allplay_data[i][0], allplay_data[i][1]);
             break;   
         }
     }
 }
 
-
-
-
 void Enter_Sound() {
-    static int Handle = LoadSoundMem("sounds/Œˆ’èAƒ{ƒ^ƒ“‰Ÿ‰º1.mp3");
+    static int Handle = LoadSoundMem("sounds/æ±ºå®šã€ãƒœã‚¿ãƒ³æŠ¼ä¸‹1.mp3");
     PlaySoundMem(Handle, DX_PLAYTYPE_BACK);
-}
-
-void File_Output() {
-    FILE* fp = fopen("savedata.dat", "wb");//ƒoƒCƒiƒŠƒtƒ@ƒCƒ‹‚ğŠJ‚­
-    fwrite(&currentPlayData, sizeof(SaveData), sizeof(currentPlayData) / sizeof(currentPlayData), fp); // SaveData_t\‘¢‘Ì‚Ì’†g‚ğo—Í
-    fclose(fp);
 }
