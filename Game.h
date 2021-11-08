@@ -3,6 +3,12 @@
 struct data_bank {
 	int count = 0;
 };
+
+typedef enum {
+	count_down,
+	play,
+} eGameMode;
+
 //XV
 void Game_Update();
 
