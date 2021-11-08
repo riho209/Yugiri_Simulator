@@ -152,7 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
-    <ClCompile Include="End.cpp" />
     <ClCompile Include="Func.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Keyboard.cpp" />
@@ -161,10 +160,11 @@
     <ClCompile Include="Ranking.cpp" />
     <ClCompile Include="SceneMgr.cpp" />
     <ClCompile Include="Score.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="WaterMeter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
-    <ClInclude Include="End.h" />
     <ClInclude Include="Func.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Keyboard.h" />
@@ -172,6 +172,8 @@
     <ClInclude Include="Ranking.h" />
     <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="Score.h" />
+    <ClInclude Include="Sound.h" />
+    <ClInclude Include="WaterMeter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

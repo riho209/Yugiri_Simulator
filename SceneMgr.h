@@ -7,7 +7,8 @@ typedef enum {
     eScene_Config,  //設定画面
     eScene_Ranking, //ランキング画面
     eScene_Score, //スコア表示画面
-    eScene_End,//終了画面
+
+    eScene_None //none
 } eScene ;
 
 
@@ -19,5 +20,6 @@ void SceneMgr_Draw();
 
 // 引数 nextScene にシーンを変更する
 void SceneMgr_ChangeScene(eScene nextScene);
-
+void SceneMgr_Initialize();//初期化
+void SceneMgr_Finalize();//終了処理
 #endif //_SCENEMGR_H_

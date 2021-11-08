@@ -1,29 +1,53 @@
-#include "Score.h"
+ï»¿#include "Score.h"
 #include "SceneMgr.h"
 #include "DxLib.h"
 #include "Func.h"
 #include <iostream>
 #include <string>
 
-using namespace std;
+static string_score str_score;
 
 static int cr1 = GetColor(255, 255, 255);
-//XV
+static int font_size;
+static int efsHandle;
+static int mImageHandle;
+//1200, 700
+//åˆæœŸåŒ–
+void Score_Initialize() {
+    font_size = 30;
+    efsHandle = LoadSoundMem("sounds/æ±ºå®šã€ãƒœã‚¿ãƒ³æŠ¼ä¸‹1.mp3");
+    mImageHandle = LoadGraph("images/Score.png");
+}
+//æ›´æ–°
 void Score_Update() {
     ScoreV_Update();
     //sleep(100);
-    if (CheckHitKey(KEY_INPUT_RETURN) != 0) { //ƒGƒ“ƒ^[ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚½‚ç
+    if (CheckHitKey(KEY_INPUT_RETURN) != 0) { //ã‚¨ãƒ³ã‚¿ãƒ¼ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãŸã‚‰
         SceneChangeFlag_Forbid();
         AllPlayData_Update();
-        Enter_Sound();
-        SceneMgr_ChangeScene(eScene_Ranking);//ƒV[ƒ“‚ğƒ‰ƒ“ƒLƒ“ƒO‚É•ÏX
+        PlaySoundMem(efsHandle, DX_PLAYTYPE_BACK);
+        SceneMgr_ChangeScene(eScene_Ranking);//ã‚·ãƒ¼ãƒ³ã‚’ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã«å¤‰æ›´
     }
+    //H8
+    /*
+    if (get_buf_h8maikon() == 'a') {
+        SceneMgr_ChangeScene(eScene_Ranking);
+    }
+    */
 }
 
-//•`‰æ
+//æç”»
 void Score_Draw() {
-    DrawString(0, 0, "ƒXƒRƒA‰æ–Ê‚Å‚·B", cr1);
-    DrawString(0, 20, "EnterƒL[‚ğ‰Ÿ‚·‚Æƒ‰ƒ“ƒLƒ“ƒO‰æ–Ê‚ÉˆÚ‚é", cr1);
-    DrawFormatString(0, 40, cr1, "Œo‰ßŠÔ(ƒ~ƒŠ•b): %d", Time_Get());
-    DrawFormatString(0, 60, cr1, "ƒXƒRƒA: %d", ScoreV_Get());
+    DrawGraph(0, 0, mImageHandle,TRUE);
+    DrawString(0, 0, str_score.explanation, cr1);
+    DrawString(0, font_size, str_score.ranking, cr1);
+    DrawString(0, font_size*2,str_score.score, cr1);
+    DrawFormatString(font_size *6, 60, cr1, "%d", Time_Get());
+    DrawString(font_size * 20, font_size * 2, str_score.time, cr1);
+    DrawFormatString(font_size*30, font_size*2, cr1, "%d", ScoreV_Get());
+}
+//çµ‚äº†å‡¦ç†
+void Score_Finalize() {
+    DeleteSoundMem(efsHandle);//ã‚µã‚¦ãƒ³ãƒ‰é–‹æ”¾
+    DeleteGraph(mImageHandle);//ç”»åƒã®è§£æ”¾
 }
