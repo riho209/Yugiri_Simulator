@@ -52,12 +52,12 @@ void Menu_Update() {
         }
         switch (NowSelect) {//Œ»İ‘I‘ğ’†‚Ìó‘Ô‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
         case eMenu_TEBO:
-            CurrentPlayData_Initialize();
+            //CurrentPlayData_Initialize();
             UseEquipment_Update(tebo);
             SceneMgr_ChangeScene(eScene_Game);
             break;
         case eMenu_HIRAZARU:
-            CurrentPlayData_Initialize();
+            //CurrentPlayData_Initialize();
             UseEquipment_Update(hirazaru);
             SceneMgr_ChangeScene(eScene_Game);
             break;
