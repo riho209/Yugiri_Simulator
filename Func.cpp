@@ -44,26 +44,32 @@ void Time_Update() {
     currentPlayData.time = GetNowCount() - currentPlayData.startTime;
 }
 
-void ScoreV_Update() {
+void ScoreV_Update() { // 11/12ï“èW high countÇçló∂
     switch (currentPlayData.equipment) {
     case tebo:
-        currentPlayData.score = 10000 - currentPlayData.time + 10;
+        currentPlayData.score = 10000 - currentPlayData.time + 10 + currentPlayData.high_count * 100;
         break;
     case hirazaru:
-        currentPlayData.score = 10000 - currentPlayData.time + 100;
+        currentPlayData.score = 10000 - currentPlayData.time + 100 + currentPlayData.high_count * 100;
         break;
     }
     if (currentPlayData.score < 1) {
         currentPlayData.score = 1;
     }
 }
-
 int ScoreV_Get() {
     return(currentPlayData.score);
 }
-
 void ScoreV_Finalize() {
     currentPlayData.score = 0;
+}
+
+
+void HighCount_Increment() {
+    currentPlayData.high_count += 1;
+}
+int HighCount_Get() {
+    return(currentPlayData.high_count);
 }
 
 int UseEquipment_Get() {
@@ -161,7 +167,8 @@ void CurrentPlayData_Initialize() {
         GetNowCount(),
         0,
         0,
-        init
+        init,
+        0 // 11/12í«â¡
     };
 }
 
