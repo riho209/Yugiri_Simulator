@@ -1,2 +1,11 @@
-﻿  Func.cpp
-  test0.vcxproj -> C:\E4YUGIRI\Yugiri_Simulator-Scene_transition\x64\Debug\test0.exe
+﻿  Config.cpp
+  Func.cpp
+  Game.cpp
+D:\Yugiri_Simulator-main\Game.cpp(132,12): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+D:\Yugiri_Simulator-main\Game.cpp(133,12): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+  Menu.cpp
+  Ranking.cpp
+  Score.cpp
+  コードを生成中...
+D:\Yugiri_Simulator-main\Func.cpp(252): warning C4715: 'get_buf_shogeki': 値を返さないコントロール パスがあります。
+  test0.vcxproj -> D:\Yugiri_Simulator-main\x64\Debug\test0.exe

@@ -15,6 +15,7 @@ typedef struct
 	int time;
 	int score;
 	int equipment;
+	int high_count; // 11/12’Ç‰Á
 } SaveData;
 
 
@@ -25,6 +26,9 @@ void Time_Draw(int x, int y, int cr);
 void ScoreV_Update();
 int ScoreV_Get();
 void ScoreV_Finalize();
+
+void HighCount_Increment(); // 11/12’Ç‰Á
+int HighCount_Get(); // 11/12’Ç‰Á
 
 int UseEquipment_Get();
 void UseEquipment_Update(eKind kind);
@@ -47,3 +51,4 @@ char get_buf_shogeki();
 void send_current_equipment();
 
 vector <vector<int>> csv2vector(string filename, int ignore_line_num);
+

@@ -53,6 +53,7 @@ void Game_Update() {
         }
         break;
     case play:
+        ScoreV_Update(); //追加
         Time_Update();
         //本番は下3行いらない
         if (CheckHitKey(KEY_INPUT_ESCAPE) != 0) {
@@ -67,14 +68,18 @@ void Game_Update() {
         switch (get_buf_shogeki()) {
         case 'l':
             UseEquipment_MoveDraw(100, 100, 0, 50, 100);
+            DrawString(0, 0, "Low", cr);
             water -= 1;
             break;
         case 'm':
             UseEquipment_MoveDraw(100, 100, 0, 50, 50);
+            DrawString(0, 0, "Mid", cr);
             water -= 5;
             break;
         case 'h':
             UseEquipment_MoveDraw(100, 100, 0, 50, 10);
+            DrawString(0, 0, "High!!", cr);
+            HighCount_Increment(); // 11/12追加
             water -= 10;
             break;
         default:
@@ -109,11 +114,16 @@ void Game_Draw() {
         //DrawString(0, 80, "水分メータ", cr);
         WaterMeter_Calc(water, 500, 100, 5, 100, 50, 2);
         DrawFormatString(500, 400, cr, "水分量: %d", water);
+        DrawFormatString(500, 420, cr, "スコア: %d", ScoreV_Get()); // 11/12追加
+        DrawFormatString(500, 440, cr, "Highを出した回数: %d", HighCount_Get()); // 11/12追加
+
         //WaterMeter_Sound(water);
 
         //UseEquipment_MoveDraw(100, 100, 0, 50, 10);
         Time_Draw(0, 60, cr);
+        
         d.count++;
+
         break;
     }
 }
