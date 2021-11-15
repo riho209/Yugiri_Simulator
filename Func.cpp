@@ -18,26 +18,28 @@ static int com_h8maikon = 1;
 static char buf_h8maikon[1000];
 static int r_h8maikon;
 
-static int com_shogeki_tebo = 7;
+static int com_shogeki_tebo = 3;
 static char buf_shogeki_tebo[1000];
 static int r_shogeki_tebo;
 
-static int com_shogeki_hira = 6;
+static int com_shogeki_hira = 4;
 static char buf_shogeki_hira[1000];
 static int r_shogeki_hira;
 
 static char buf_current_equipment[1000];
 //ここまでシリアル通信用変数
 static int yello = GetColor(255, 241, 0);
-
-
+//タイマリセット
+void Time_Reset() {
+    currentPlayData.startTime = GetNowCount();
+}
 int Time_Get() {
     return(currentPlayData.time);
 }
 
 void Time_Draw(int x, int y, int cr) {
     DrawFormatString(x, y, cr, "経過時間(ミリ秒): %d", currentPlayData.time);
-    DrawFormatString(x, y+100, cr, "経過時間(h:m:s): %02d:%02d:%02d", (currentPlayData.time / 1000) /3600, ((currentPlayData.time / 1000) % 3600) / 60, (currentPlayData.time/1000) % 60);
+    DrawFormatString(x, y+30, cr, "経過時間(h:m:s): %02d:%02d:%02d", (currentPlayData.time / 1000) /3600, ((currentPlayData.time / 1000) % 3600) / 60, (currentPlayData.time/1000) % 60);
 }
 
 void Time_Update() {
@@ -47,10 +49,10 @@ void Time_Update() {
 void ScoreV_Update() {
     switch (currentPlayData.equipment) {
     case tebo:
-        currentPlayData.score = 10000 - currentPlayData.time + 10;
+        currentPlayData.score = 10000 - currentPlayData.time + 10 + currentPlayData.high_count * 100;
         break;
     case hirazaru:
-        currentPlayData.score = 10000 - currentPlayData.time + 100;
+        currentPlayData.score = 10000 - currentPlayData.time + 100 + currentPlayData.high_count * 100;
         break;
     }
     if (currentPlayData.score < 1) {
@@ -66,6 +68,12 @@ void ScoreV_Finalize() {
     currentPlayData.score = 0;
 }
 
+void HighCount_Increment() {
+    currentPlayData.high_count += 1;
+}
+int HighCount_Get() {
+    return(currentPlayData.high_count);
+}
 int UseEquipment_Get() {
     return(currentPlayData.equipment);
 }
@@ -108,7 +116,7 @@ int WritePlayData(const char* fileName) {
         std::cout << "ファイルが開けませんでした" << endl;
         return 0;
     }
-    ofs << currentPlayData.time << "," << currentPlayData.score << "," << currentPlayData.equipment << endl;
+    ofs << currentPlayData.time << "," << currentPlayData.score << "," << currentPlayData.equipment << currentPlayData.high_count<< endl;
     cout << "書き込み完了" << endl;
 
     return 1;
@@ -161,7 +169,8 @@ void CurrentPlayData_Initialize() {
         GetNowCount(),
         0,
         0,
-        init
+        init,
+        0 // 11/12追加
     };
 }
 
@@ -171,10 +180,10 @@ void AllPlayData_Update() {
     
 }
 static int cr;
-#define FONT 30
+#define FONT 40
 
 void AllPlayData_Draw(int x, int y, vector <vector<int>> allplay_data) {
-    DrawString(x,y- FONT, "順位 時間 スコア 器具", GetColor(255, 255, 255));
+    DrawString(x,y- FONT, "順位 時間 スコア 器具　HIGHの回数", GetColor(255, 255, 255));
     int range = RANKINGRANGE;
     if (int(allplay_data.size()) < RANKINGRANGE) range = int(allplay_data.size());
     for (int i = 0; i <range; i++) {
@@ -186,11 +195,10 @@ void AllPlayData_Draw(int x, int y, vector <vector<int>> allplay_data) {
         }
         switch (allplay_data[i][2]) {
         case tebo:
-            DrawFormatString(x, y + (i+1) * FONT, cr, "%2d位 %4d %4d てぼ", i + 1, allplay_data[i][0], allplay_data[i][1]);
+            DrawFormatString(x, y + (i+1) * FONT, cr, "%2d位 %4d %5d  てぼ　　 %2d", i + 1, allplay_data[i][0], allplay_data[i][1], allplay_data[i][3]);
             break;
         case hirazaru:
-            DrawFormatString(x, y + (i + 1) * FONT, cr, "%2d位 %4d %4d ひらざる", i + 1, allplay_data[i][0], allplay_data[i][1]);
-            DrawFormatString(x, y + (i + 1) * FONT, cr, "%2d位 %4d %4d ひらざる", i + 1, allplay_data[i][0], allplay_data[i][1]);
+            DrawFormatString(x, y + (i + 1) * FONT, cr, "%2d位 %4d %5d  ひらざる %2d", i + 1, allplay_data[i][0], allplay_data[i][1], allplay_data[i][3]);
             break;   
         }
     }
@@ -210,10 +218,10 @@ void serial_initialize() {
 
 
 char get_buf_h8maikon() {
-    DrawString(200, 100, "get_buf_h8maikon関数実行中", yello);
+    //DrawString(200, 100, "get_buf_h8maikon関数実行中", yello);
     if (ERS_CheckRecv(com_h8maikon) > 0) {  // シリアル通信の受信データあり
         r_h8maikon = ERS_Recv(com_h8maikon, buf_h8maikon, 1);
-        DrawString(200, 100, "受信データあり", yello);
+        //DrawString(200, 100, "受信データあり", yello);
         return(buf_h8maikon[0]);
     }
     else {
@@ -227,21 +235,21 @@ char get_buf_shogeki() {
     case tebo:
         if (ERS_CheckRecv(com_shogeki_tebo) > 0) {  // シリアル通信の受信データあり
             r_shogeki_tebo = ERS_Recv(com_shogeki_tebo, buf_shogeki_tebo, 1);
-            DrawString(200, 100, "受信データあり", yello);
+            //DrawString(200, 100, "受信データあり", yello);
             return(buf_shogeki_tebo[0]);
         }
         break;
     case hirazaru:
         if (ERS_CheckRecv(com_shogeki_hira) > 0) {  // シリアル通信の受信データあり
             r_shogeki_hira = ERS_Recv(com_shogeki_hira, buf_shogeki_hira, 1);
-            DrawString(200, 100, "受信データあり", yello);
+            //DrawString(200, 100, "受信データあり", yello);
             return(buf_shogeki_hira[0]);
         }
         break;
     default:
         return('z');
     }
-
+    return NULL;
 }
 
 void send_current_equipment() {

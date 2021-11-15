@@ -2,6 +2,7 @@
 #include "SceneMgr.h"
 #include "Keyboard.h"
 #include "Sound.h"
+#include "Func.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     ChangeWindowMode(TRUE);
@@ -11,6 +12,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     SetGraphMode(1200, 700, 32);
     SceneMgr_Initialize();
     Sound_Initialize();
+    serial_initialize();
+    
     while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
         Keyboard_Update();
         SceneMgr_Update();
@@ -19,7 +22,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             break;
         }
     }
-
+    Sound_Finalize();
     SceneMgr_Finalize();
 
     DxLib_End();

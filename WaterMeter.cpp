@@ -57,8 +57,7 @@ void WaterMeter_Sound(int water) {
         Enter_Sound();
         break;
     case 1:
-        static int Handle = LoadSoundMem("sounds/Š½º‚Æ”è.mp3");
-        PlaySoundMem(Handle, DX_PLAYTYPE_BACK);
+        Applause_Sound();
         break;
     }
 }

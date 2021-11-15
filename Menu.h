@@ -1,7 +1,8 @@
 #ifndef _MENU_H_
 #define _MENU_H_
 
-void Menu_Initialize();//‰Šú‰»
+//‰Šú‰»
+void Menu_Initialize();
 
 //XV
 void Menu_Update();

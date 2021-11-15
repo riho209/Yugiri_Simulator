@@ -15,16 +15,20 @@ typedef struct
 	int time;
 	int score;
 	int equipment;
+	int high_count; // 11/12’Ç‰Á
 } SaveData;
 
 
 int Time_Get();
 void Time_Update();
 void Time_Draw(int x, int y, int cr);
-
+void Time_Reset();
 void ScoreV_Update();
 int ScoreV_Get();
 void ScoreV_Finalize();
+
+void HighCount_Increment(); // 11/12’Ç‰Á
+int HighCount_Get(); // 11/12’Ç‰Á
 
 int UseEquipment_Get();
 void UseEquipment_Update(eKind kind);
